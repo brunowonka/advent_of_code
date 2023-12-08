@@ -97,26 +97,18 @@ impl Outcome {
         let (map, max) = game
             .iter()
             .fold((HashMap::new(), 0), |(mut map, max), card| {
-                let count = match map.entry(card) {
-                    std::collections::hash_map::Entry::Occupied(mut o) => {
-                        *o.get_mut() += 1;
-                        *o.get_mut()
-                    }
-                    std::collections::hash_map::Entry::Vacant(v) => {
-                        v.insert(1);
-                        1
-                    }
-                };
+                let v = map.entry(card).or_insert(0);
+                *v += 1;
                 let max = if *card == Card::W {
                     max
                 } else {
-                    cmp::max(max, count)
+                    cmp::max(max, *v)
                 };
                 (map, max)
             });
 
-        let (len, max) = match map.get(&Card::W).copied() {
-            Some(v) => (cmp::max(map.len() - 1, 1), max + v),
+        let (len, max) = match map.get(&Card::W) {
+            Some(v) => (cmp::max(map.len() - 1, 1), max + *v),
             None => (map.len(), max),
         };
 
@@ -133,14 +125,12 @@ impl Outcome {
     }
 }
 
-#[test]
-fn part1() {
-    let mut vec = input(|c| c)
+fn puzzle(f: impl Fn(Card) -> Card) -> usize {
+    let mut vec = input(f)
         .map(|(game, value)| (Outcome::from_game(&game), game, value))
         .collect::<Vec<_>>();
     vec.sort_by(|(outcome, game, _), (o, g, _)| cmp::Ord::cmp(&(outcome, game), &(o, g)).reverse());
-    let ans: usize = vec
-        .iter()
+    vec.iter()
         .enumerate()
         .map(|(rank, (outcome, game, value))| {
             // println!("{outcome:?} {game:?}");
@@ -148,28 +138,20 @@ fn part1() {
             let _ = game;
             (rank + 1) * *value
         })
-        .sum();
+        .sum()
+}
+
+#[test]
+fn part1() {
+    let ans = puzzle(|c| c);
     println!("day 7 part 1 = {ans}");
 }
 
 #[test]
 fn part2() {
-    let mut vec = input(|c| match c {
+    let ans = puzzle(|c| match c {
         Card::J => Card::W,
         c => c,
-    })
-    .map(|(game, value)| (Outcome::from_game(&game), game, value))
-    .collect::<Vec<_>>();
-    vec.sort_by(|(outcome, game, _), (o, g, _)| cmp::Ord::cmp(&(outcome, game), &(o, g)).reverse());
-    let ans: usize = vec
-        .iter()
-        .enumerate()
-        .map(|(rank, (outcome, game, value))| {
-            // println!("{outcome:?} {game:?}");
-            let _ = outcome;
-            let _ = game;
-            (rank + 1) * *value
-        })
-        .sum();
+    });
     println!("day 7 part 2 = {ans}");
 }
