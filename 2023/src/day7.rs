@@ -107,9 +107,20 @@ impl Outcome {
                         1
                     }
                 };
-                (map, cmp::max(max, count))
+                let max = if *card == Card::W {
+                    max
+                } else {
+                    cmp::max(max, count)
+                };
+                (map, max)
             });
-        let reg = match (map.len(), max) {
+
+        let (len, max) = match map.get(&Card::W).copied() {
+            Some(v) => (cmp::max(map.len() - 1, 1), max + v),
+            None => (map.len(), max),
+        };
+
+        match (len, max) {
             (5, 1) => Self::None,
             (4, 2) => Self::Pair,
             (3, 2) => Self::TwoPair,
@@ -118,19 +129,6 @@ impl Outcome {
             (2, 4) => Self::Four,
             (1, 5) => Self::Five,
             x => panic!("unexpected game {x:?} {map:?}"),
-        };
-
-        match (reg, map.get(&Card::W).copied().unwrap_or(0)) {
-            (reg, 0) => reg,
-            (Self::None, 1) => Self::Pair,
-            (Self::Pair, 1) | (Self::Pair, 2) => Self::Three,
-            (Self::TwoPair, 1) => Self::FullHouse,
-            (Self::TwoPair, 2) => Self::Four,
-            (Self::Three, 1) => Self::Four,
-            (Self::Three, 2) => Self::Five,
-            (Self::FullHouse, _) => Self::Five,
-            (Self::Four, _) | (Self::Five, _) => Self::Five,
-            o => panic!("unknown {o:?}"),
         }
     }
 }
