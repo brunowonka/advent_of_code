@@ -10,5 +10,4 @@ bench = false
 [dependencies]
 regex = "1.10.2"
 itertools = "0.12.0"
-aoc-runner = "0.3.0"  
-aoc-runner-derive = "0.3.0" 
+num = "0.4.1" 
