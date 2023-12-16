@@ -11,3 +11,5 @@ bench = false
 regex = "1.10.2"
 itertools = "0.12.0"
 num = "0.4.1" 
+euclid = "0.22.9"
+
