@@ -14,6 +14,7 @@ mod day19;
 mod day2;
 mod day20;
 mod day21;
+mod day22;
 mod day3;
 mod day4;
 mod day5;
@@ -155,5 +156,12 @@ impl Direction {
             Direction::Left => Vector::new(-1, 0),
             Direction::Right => Vector::new(1, 0),
         }
+    }
+}
+
+fn minmax<T: std::cmp::Ord>(a: T, b: T) -> (T, T) {
+    match a.cmp(&b) {
+        std::cmp::Ordering::Less | std::cmp::Ordering::Equal => (a, b),
+        std::cmp::Ordering::Greater => (b, a),
     }
 }
