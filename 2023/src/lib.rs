@@ -15,6 +15,7 @@ mod day2;
 mod day20;
 mod day21;
 mod day22;
+mod day23;
 mod day3;
 mod day4;
 mod day5;
@@ -134,9 +135,13 @@ impl<T> Map<T> {
     fn lines(&self) -> usize {
         self.nodes.len() / self.cols
     }
+
+    fn bounds(&self) -> Vector {
+        Vector::new(self.cols as isize, self.lines() as isize)
+    }
 }
 
-#[derive(Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[derive(Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Copy, Clone)]
 enum Direction {
     Up,
     Down,
@@ -155,6 +160,15 @@ impl Direction {
             Direction::Down => Vector::new(0, 1),
             Direction::Left => Vector::new(-1, 0),
             Direction::Right => Vector::new(1, 0),
+        }
+    }
+
+    fn opposite(&self) -> Direction {
+        match self {
+            Direction::Up => Direction::Down,
+            Direction::Down => Direction::Up,
+            Direction::Left => Direction::Right,
+            Direction::Right => Direction::Left,
         }
     }
 }
